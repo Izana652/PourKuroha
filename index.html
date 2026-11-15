@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lettre de Shinkiri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Shippori+Mincho:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: #080203;
+            color: #fceade;
+            overflow-x: hidden;
+        }
+
+        .font-jp { font-family: 'Shippori Mincho', serif; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+
+        .bg-crimson-forest {
+            background-image: radial-gradient(circle at center, rgba(20, 3, 5, 0.4) 0%, rgba(8, 2, 3, 0.96) 100%), 
+                              url('https://i.pinimg.com/1200x/a7/b8/00/a7b80065c23363811ba67a273fb00d73.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .washi-parchment {
+            background: linear-gradient(135deg, #1c080b 0%, #150507 50%, #0d0304 100%);
+            border-left: 1px solid rgba(217, 4, 41, 0.4);
+            border-right: 1px solid rgba(217, 4, 41, 0.4);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), inset 0 0 60px rgba(157, 2, 8, 0.2);
+            height: auto;
+            overflow: visible;
+        }
+
+        .scroll-unroll-animation {
+            animation: unroll 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes unroll {
+            0% { opacity: 0; transform: scaleY(0.1); }
+            100% { opacity: 1; transform: scaleY(1); }
+        }
+
+        .roller-wood {
+            background: linear-gradient(90deg, #2b090a 0%, #6a040f 50%, #2b090a 100%);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+        }
+
+        .hanko-seal {
+            background: radial-gradient(circle at 30% 30%, #e63946, #9d0208, #370617);
+            border: 2px solid rgba(255, 183, 3, 0.6);
+            box-shadow: 0 0 15px rgba(230, 57, 70, 0.5);
+        }
+
+        .sakura-petal {
+            position: absolute;
+            background: linear-gradient(135deg, #ff4d6d 0%, #a71e34 100%);
+            border-radius: 15px 0 15px 0;
+            pointer-events: none;
+            opacity: 0.7;
+            animation: fall 10s infinite linear;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-5vh) rotate(0deg) translateX(0px); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(105vh) rotate(720deg) translateX(100px); opacity: 0; }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(8, 2, 3, 0.9); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(217, 4, 41, 0.6); border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-crimson-forest min-h-screen flex flex-col justify-between items-center relative custom-scrollbar">
+
+    <!-- En-tête -->
+    <header class="w-full p-4 md:p-6 flex justify-between items-center z-50">
+        <div class="flex items-center space-x-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+            <span class="font-jp text-xs md:text-sm tracking-widest text-red-300 uppercase">神桐の文 (Lettre de Shinkiri)</span>
+        </div>
+
+        <div class="flex items-center bg-black/70 backdrop-blur-md px-4 py-2 rounded-full border border-red-900/60 space-x-3 shadow-lg">
+            <button id="audioBtn" onclick="toggleAudio()" class="text-red-400 hover:text-red-200 transition focus:outline-none">
+                <svg id="playIcon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                </svg>
+                <svg id="pauseIcon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5 0a1 1 0 012 0v4a1 1 0 11-2 0V8z" clip-rule="evenodd"/>
+                </svg>
+            </button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.6" oninput="changeVolume(this.value)" class="w-20 md:w-28 accent-red-600 cursor-pointer">
+        </div>
+    </header>
+
+    <div id="sakuraContainer" class="fixed inset-0 pointer-events-none z-10"></div>
+
+    <main class="flex-1 flex items-center justify-center w-full my-8 px-4 z-20">
+        
+        <!-- ROULEAU FERMÉ -->
+        <div id="scrollClosed" class="flex flex-col items-center justify-center cursor-pointer group" onclick="openScroll()">
+            <div class="relative flex items-center justify-center py-6">
+                <div class="roller-wood w-6 h-32 md:h-40 rounded-sm border border-amber-600/40"></div>
+                
+                <div class="w-56 md:w-72 h-24 md:h-28 bg-gradient-to-r from-red-950 via-red-900 to-red-950 border-y-2 border-amber-500/50 shadow-2xl flex items-center justify-center relative mx-[-2px] transition-transform duration-500 group-hover:scale-105">
+                    <div class="absolute inset-y-0 w-8 bg-red-950 border-x border-red-600/60 flex items-center justify-center">
+                        <div class="hanko-seal w-12 h-12 rounded-full flex items-center justify-center font-jp font-bold text-amber-200 text-lg shadow-xl group-hover:rotate-12 transition-transform">
+                            愛
+                        </div>
+                    </div>
+                </div>
+
+                <div class="roller-wood w-6 h-32 md:h-40 rounded-sm border border-amber-600/40"></div>
+            </div>
+            
+            <p class="font-cinzel text-red-300 tracking-widest mt-4 text-sm md:text-base uppercase group-hover:text-amber-200 transition-colors">
+                — Toucher pour dérouler le parchemin —
+            </p>
+        </div>
+
+        <!-- ROULEAU DÉROULÉ -->
+        <div id="scrollOpened" class="hidden w-full max-w-2xl">
+            <div class="flex justify-end mb-2">
+                <button onclick="closeScroll()" class="flex items-center space-x-2 text-xs font-cinzel text-red-400 hover:text-amber-200 bg-black/60 px-3 py-1.5 rounded-full border border-red-900/50 transition">
+                    <span>Fermer le parchemin</span>
+                    <span>✕</span>
+                </button>
+            </div>
+
+            <div class="roller-wood h-5 w-full rounded-t-md border-b border-amber-600/40 shadow-md"></div>
+            
+            <article class="washi-parchment p-6 md:p-12 scroll-unroll-animation relative">
+                <div class="text-center mb-10 pb-6 border-b border-red-900/50">
+                    <span class="font-jp text-red-500/70 text-sm tracking-widest block mb-1">黒羽へ (Pour Kuroha)</span>
+                    <h1 class="font-cinzel text-3xl md:text-5xl text-red-400 font-bold tracking-wide">Lettre de Shinkiri</h1>
+                    <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-red-600 to-transparent mx-auto mt-4"></div>
+                </div>
+
+                <div class="text-lg md:text-xl leading-relaxed text-amber-100/90 space-y-6 font-serif text-justify">
+                    <p>Kuroha,</p>
+
+                    <p>Avant de commencer cette lettre, je te demanderai simplement de prendre quelques instants pour la lire.. Je sais que tu as certainement beaucoup de choses en tête et je ne souhaite pas t'imposer davantage de poids.. Je veux simplement prendre le temps de t'écrire, de te parler de quelque chose qui me tient profondément à cœur..</p>
+
+                    <p>J'espère tout d'abord que le repas que je te prépare te plaît.. J'y consacre un peu de temps, en essayant de faire les choses correctement.. Peut-être que ce n'est pas grand-chose, mais je veux que tu puisses avoir quelque chose de chaud, quelque chose préparé avec attention.. Même à distance, je veux continuer à prendre soin de toi, à ma manière, sans attendre quoi que ce soit en retour..</p>
+
+                    <p>Il y a également quelque chose dont je veux te parler.. La nuit dernière, je fais un rêve.. Un rêve qui me marque profondément et que je n'arrive pas vraiment à oublier depuis mon réveil..</p>
+
+                    <p>Dans ce rêve, nous sommes tous les deux.. Toi et moi, auprès de Kurei.. Mais nous ne sommes pas seuls.. Une petite fille est également présente à nos côtés.. Elle a tes cheveux, certains de tes traits et surtout ce même regard qui me touche tant chez toi.. Elle court partout dans notre Domaine, accompagnée de son grand frère, tandis que nous les observions avec un sourire..</p>
+
+                    <p>Je nous vois tous les deux, Kuroha.. Pas simplement comme deux personnes qui partagent le même toit, mais comme un véritable couple, comme deux parents heureux de voir leur famille grandir.. Je te vois sourire, rire avec les enfants, les taquiner et leur apprendre certaines choses.. Je me vois à tes côtés, parfois à plaisanter avec toi, parfois à prendre le relais lorsque les petits deviennent trop agités.. Et même dans les moments les plus simples, il y a quelque chose de magnifique.. Cette sensation d'être exactement là où nous devons être..</p>
+
+                    <p>Je nous imagine préparer les repas ensemble, nous chamailler pour des détails insignifiants, nous retrouver après nos journées et profiter de ces quelques instants de tranquillité lorsque les enfants finissent enfin par s'endormir.. Je nous imagine également assis côte à côte, simplement à profiter de la présence de l'autre, sans avoir besoin de trouver quelque chose à dire.. Parce que parfois, être auprès de la personne que l'on aime suffit à rendre un moment précieux..</p>
+
+                    <p>Et puis, il y a cette petite fille.. Elle vient régulièrement vers toi, te demande de lui apprendre à manier une lame, tandis que Kurei essaie de lui montrer tout ce qu'il sait déjà.. Ils veulent tous les deux devenir aussi forts que leurs parents.. Ils veulent devenir des héros, protéger leur famille et faire en sorte que personne n'ait à souffrir..</p>
+
+                    <p class="italic text-red-300 pl-4 md:pl-6 border-l-2 border-red-600/70 my-6 py-1 bg-red-950/20">
+                        « Papa.. Maman.. J'aimerais devenir comme vous.. Aux côtés de Kurei, nous aussi, on devient des héros ! On vous protège, on combat les démons et on fait en sorte que personne n'ait à souffrir.. Comme vous le faites ! »
+                    </p>
+
+                    <p>Je nous vois les regarder avec cette fierté que seuls des parents peuvent ressentir.. Tu as ce sourire que j'aime tant, et je sens ta main dans la mienne.. À cet instant, je n'ai besoin de rien d'autre.. Nous sommes ensemble.. Notre famille est réunie et nous avons enfin cette tranquillité dont nous rêvons tant..</p>
+
+                    <p>Mais tu sais ce qui me marque le plus dans ce rêve, Kuroha ?</p>
+
+                    <p>Ce n'est pas uniquement cette petite fille, ni même cette famille que j'imagine.. C'est nous deux.. C'est de te voir heureuse à mes côtés, de nous voir partager notre quotidien, de constater que malgré les années et les épreuves, nous sommes toujours capables de nous regarder avec autant d'amour.. C'est de pouvoir être ton mari, ton compagnon, celui avec qui tu construis chaque petit morceau de cette vie..</p>
+
+                    <p>Parce que je ne rêve pas seulement d'avoir une famille.. Je rêve de la vivre avec toi.. Je rêve de continuer à te découvrir, de connaître tes envies, tes projets, tes petites habitudes et même ces choses qui peuvent parfois m'agacer chez toi.. Je rêve de te faire rire lorsque tu passes une mauvaise journée, de te serrer dans mes bras lorsque tu en ressens le besoin et de trouver, moi aussi, du réconfort auprès de toi..</p>
+
+                    <p>Je veux partager des anniversaires avec toi, célébrer nos réussites, préparer des surprises et créer des souvenirs que nous racontons à nos enfants.. Je veux te voir t'endormir à mes côtés, te souhaiter une bonne nuit et être présent lorsque tu ouvres les yeux le lendemain.. Je veux connaître ces journées ordinaires qui, lorsqu'on les partage avec la bonne personne, deviennent finalement les plus belles..</p>
+
+                    <p>Je veux que nous puissions nous choisir, chaque jour.. Que nous apprenions à mieux nous comprendre, à nous écouter et à nous soutenir.. Je ne prétends pas que notre histoire est toujours facile, ni que nous ne rencontrons jamais de difficultés.. Mais je veux que nous puissions les affronter ensemble, sans oublier que nous sommes deux personnes qui choisissent de construire quelque chose l'une avec l'autre..</p>
+
+                    <p>Je sais que je commets des erreurs.. Je sais également que certaines de mes paroles ou de mes actes te blessent et que de simples excuses ne suffisent pas à réparer ce qui est abîmé.. Je ne veux pas faire comme si rien ne se passe, ni prétendre que tout redevient comme avant en un claquement de doigts.. Je veux simplement apprendre de tout cela, changer ce qui doit l'être et te montrer, avec le temps et par mes actes, que je suis capable de prendre soin de notre relation..</p>
+
+                    <p>Je ne souhaite pas retrouver exactement le passé.. Je veux que nous construisions quelque chose de nouveau, quelque chose de plus solide, de plus sincère et de plus beau encore.. Nous grandissons, nous changeons et nous traversons des choses qui nous marquent profondément.. Mais je refuse de croire que tout ce que nous partageons ne mérite plus d'avoir un avenir..</p>
+
+                    <p>Notre famille, Kuroha, ne se résume pas à ce rêve que je fais cette nuit.. Elle existe déjà.. Elle est là, dans Kurei, dans les souvenirs que nous construisons, dans tous ces moments où nous partageons nos joies et nos peines.. Elle est dans cette histoire que nous écrivons ensemble.. Et j'aimerais tellement que nous continuions à en écrire les prochaines pages..</p>
+
+                    <p>Je veux que Kurei grandisse auprès de ses deux parents.. Qu'il puisse nous voir rire ensemble, nous soutenir et nous aimer.. Qu'il puisse comprendre qu'un couple n'a pas besoin d'être parfait pour être heureux, mais qu'il doit apprendre à prendre soin l'un de l'autre.. Et si un jour cette petite fille de mon rêve vient réellement agrandir notre famille, je veux qu'elle connaisse elle aussi cette même affection, cette même sécurité et tout cet amour que nous avons à lui offrir..</p>
+
+                    <p>Je nous imagine parfois quelques années plus tard.. Nous regardant jouer avec nos enfants devant notre Domaine, peut-être un peu fatigués par leurs bêtises, mais heureux de les voir grandir.. Je nous imagine échanger un regard, sourire et nous rappeler tout le chemin parcouru.. Et à cet instant, je veux prendre ta main, déposer un baiser dessus et simplement te remercier d'être à mes côtés..</p>
+
+                    <p>Te remercier de partager cette vie avec moi.. D'être cette femme avec qui je construis une famille.. D'être la mère de notre enfant et celle avec qui je rêve de découvrir l'avenir..</p>
+
+                    <p>Je veux pouvoir te dire que, parmi toutes les choses que la vie m'offre, te rencontrer et construire cette histoire avec toi restent parmi les plus belles..</p>
+
+                    <p>Je sais que je ne peux pas décider de notre avenir à moi seul.. Je sais que tes sentiments, tes envies et tes choix comptent tout autant que les miens.. C'est justement pour cela que je veux t'écrire cette lettre.. Pas pour te demander une promesse, pas pour te forcer à me répondre et encore moins pour te faire porter mes espoir.. Je veux simplement que tu saches ce que je ressens et ce que je souhaite encore vivre avec toi, si tu en as également envie..</p>
+
+                    <p>Je veux pouvoir te dire tout cela en face.. Te regarder dans les yeux, prendre doucement ta main et trouver les mots justes.. Mais je préfère prendre le temps de les écrire, plutôt que de risquer de mal m'exprimer devant toi..</p>
+
+                    <p>Alors, Kuroha.. Je veux que tu saches une dernière chose..</p>
+
+                    <p class="text-2xl md:text-3xl font-bold text-red-400 my-6 text-center font-cinzel tracking-wide">Je t'aime..</p>
+
+                    <p>Et je ne parle pas seulement de ces trois mots que nous échangeons.. Je parle de cet amour qui me donne encore envie de partager mes journées avec toi, de prendre soin de toi, de te voir sourire et de construire un avenir à tes côtés.. Je parle de cet amour qui me fait rêver d'une maison remplie de souvenirs, de nos enfants qui courent partout et de nous deux, toujours côte à côte, après toutes ces années..</p>
+
+                    <p>Je veux être celui qui te fait sourire au réveil, celui qui prépare tes repas, celui qui vient te retrouver après une longue journée et celui avec qui tu partages tes rêves les plus fous.. Je veux aussi être celui auprès de qui tu n'as pas besoin de cacher tes peines, tes doutes ou tes faiblesses.. Et je souhaite trouver la même tendresse auprès de toi..</p>
+
+                    <p>Je ne veux pas simplement être Shinkiri, ni que tu sois simplement Kuroha.. Je veux que nous soyons ce couple que nous choisissons d'être.. Deux personnes différentes, avec leurs qualités et leurs défauts, mais qui décident de construire une famille et de partager leur vie..</p>
+
+                    <p>Je ne sais pas ce que l'avenir nous réserve.. Mais je veux croire que nous avons encore la possibilité de vivre ce rêve.. Je veux que nous puissions nous regarder et sourire.. Pas parce que tout est facile, mais parce que nous apprenons à nous retrouver, à nous comprendre et à avancer ensemble..</p>
+
+                    <p>J'espère qu'un jour, ce ne sera plus seulement un rêve que je couche sur une feuille.. Mais un souvenir que nous vivons tous les deux..</p>
+
+                    <p>Je t'aime, Kuroha..</p>
+
+                    <div class="pt-8 text-right">
+                        <span class="font-jp text-red-500/80 text-sm block">神桐</span>
+                        <p class="font-cinzel text-3xl font-bold text-red-400">Shinkiri.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-center mt-10 pt-6 border-t border-red-900/40">
+                    <button onclick="closeScroll()" class="font-cinzel text-sm text-red-300 hover:text-amber-200 bg-red-950/80 px-6 py-2 rounded-full border border-red-700/60 transition">
+                        — Refermer le parchemin —
+                    </button>
+                </div>
+            </article>
+
+            <div class="roller-wood h-5 w-full rounded-b-md border-t border-amber-600/40 shadow-md"></div>
+        </div>
+    </main>
+
+    <footer class="w-full p-4 text-center text-xs text-red-800/80 font-jp tracking-widest z-20">
+        黒羽 と 神桐 — Pour Toujours
+    </footer>
+
+    <!-- Audio Solo Leveling intégré avec le lien direct Catbox -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="https://files.catbox.moe/oc9nps.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const sakuraContainer = document.getElementById('sakuraContainer');
+        for (let i = 0; i < 30; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'sakura-petal';
+            const size = Math.random() * 8 + 6;
+            petal.style.width = `${size}px`;
+            petal.style.height = `${size * 1.4}px`;
+            petal.style.left = `${Math.random() * 100}vw`;
+            petal.style.animationDuration = `${Math.random() * 5 + 7}s`;
+            petal.style.animationDelay = `${Math.random() * 5}s`;
+            sakuraContainer.appendChild(petal);
+        }
+
+        const audio = document.getElementById('bgAudio');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } else {
+                audio.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        }
+
+        function changeVolume(val) {
+            audio.volume = val;
+        }
+
+        function playPaperSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const bufferSize = ctx.sampleRate * 0.6;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(600, ctx.currentTime);
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                noise.start();
+            } catch(e) {}
+        }
+
+        function openScroll() {
+            playPaperSound();
+            document.getElementById('scrollClosed').classList.add('hidden');
+            document.getElementById('scrollOpened').classList.remove('hidden');
+            
+            if (audio.paused) {
+                audio.volume = 0.6;
+                audio.play().then(() => {
+                    playIcon.classList.add('hidden');
+                    pauseIcon.classList.remove('hidden');
+                }).catch(() => {});
+            }
+        }
+
+        function closeScroll() {
+            playPaperSound();
+            document.getElementById('scrollOpened').classList.add('hidden');
+            document.getElementById('scrollClosed').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
